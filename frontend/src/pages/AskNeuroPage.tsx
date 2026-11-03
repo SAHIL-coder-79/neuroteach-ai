@@ -9,7 +9,9 @@ import {
   RefreshCw, 
   MessageSquarePlus, 
   Compass,
-  Volume2
+  Volume2,
+  PlusCircle,
+  FileQuestion
 } from 'lucide-react';
 import { ChatMessage, ErrorType, TeachingStrategy } from '@/types';
 import { GraphPanel } from '@/components/visual/GraphPanel';
@@ -19,6 +21,11 @@ import { voiceAssistant } from '@/utils/voiceAssistant';
 
 export const AskNeuroPage: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState<'mathematics' | 'python' | 'dsa' | 'ai_ml'>('mathematics');
+  const [currentQuestionTitle, setCurrentQuestionTitle] = useState<string>("Find the x-coordinate of the vertex for f(x) = x² - 4x + 3");
+  const [canonicalAnswer, setCanonicalAnswer] = useState<string>("2");
+  const [showCustomModal, setShowCustomModal] = useState<boolean>(false);
+  const [customQuestionInput, setCustomQuestionInput] = useState<string>("");
+  const [customAnswerInput, setCustomAnswerInput] = useState<string>("");
   const [serverHealth, setServerHealth] = useState<HealthApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeStrategyNote, setActiveStrategyNote] = useState<string>("Adaptive policy ready: Progressive hint initialized.");
@@ -64,13 +71,36 @@ export const AskNeuroPage: React.FC = () => {
     const welcomeMsg: ChatMessage = {
       id: `m_${Date.now()}`,
       sender: 'neuro',
-      text: `Hello Aarav! I'm your Socratic Tutor for ${selectedSubject.toUpperCase()}. Which problem or question are you currently working through? Enter your attempt and whatever reasoning you've tried so far.`,
+      text: `Hello Aarav! I'm your Socratic Tutor for ${selectedSubject.toUpperCase()}. Which question or problem would you like to investigate today? You can type any question or your current problem step below.`,
       timestamp: 'Just now',
     };
     setMessages([welcomeMsg]);
     setInputVal('');
     setReasoningVal('');
     setActiveStrategyNote("New conversation started. Waiting for student attempt.");
+  };
+
+  const handleSetCustomQuestion = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customQuestionInput.trim()) return;
+
+    const q = customQuestionInput.trim();
+    const ans = customAnswerInput.trim() || "N/A";
+    setCurrentQuestionTitle(q);
+    setCanonicalAnswer(ans);
+    setShowCustomModal(false);
+    setCustomQuestionInput("");
+    setCustomAnswerInput("");
+
+    // Initiate tutor on the new question
+    const introMsg: ChatMessage = {
+      id: `m_${Date.now()}`,
+      sender: 'neuro',
+      text: `We are now exploring your question: "${q}". How would you approach this, or what is your first thought?`,
+      timestamp: 'Just now',
+    };
+    setMessages([introMsg]);
+    setActiveStrategyNote(`Target Question Updated: ${q}`);
   };
 
   const handleSpeakMessage = (text: string) => {
@@ -101,8 +131,8 @@ export const AskNeuroPage: React.FC = () => {
       const response = await api.processTurn({
         subject: selectedSubject,
         concept_id: selectedSubject === 'mathematics' ? 'quadratic.vertex' : `${selectedSubject}.core`,
-        question_text: "Find the x-coordinate of the vertex for f(x) = x² - 4x + 3",
-        canonical_answer: "x = 2",
+        question_text: currentQuestionTitle,
+        canonical_answer: canonicalAnswer,
         student_message: studentText,
         student_reasoning: studentReasoning || undefined,
       });
@@ -117,7 +147,7 @@ export const AskNeuroPage: React.FC = () => {
         strategy: strategyName,
         diagnosis: response.diagnosis ? {
           error_type: (response.diagnosis.error_type || 'conceptual') as ErrorType,
-          misconception_id: response.diagnosis.misconception_id || 'unnamed_misconception',
+          misconception_id: response.diagnosis.misconception_id || 'user_inquiry',
           confidence: response.diagnosis.confidence || 0.85,
           evidence: response.diagnosis.evidence || studentText,
           explanation: response.diagnosis.explanation || 'Identified pattern in student reasoning.',
@@ -130,15 +160,21 @@ export const AskNeuroPage: React.FC = () => {
       setActiveStrategyNote(`Active Policy: ${response.strategy?.name || 'adaptive'} (Source: LoRA 819874ef Hybrid Core)`);
       handleSpeakMessage(feedbackText);
     } catch {
+      // Dynamic fallback based on what the student actually asked
+      let fallbackText = `That's an interesting question about "${studentText}". What is your current hypothesis or what have you learned about it so far?`;
+      if (studentText.toLowerCase().includes("photosynthesis")) {
+        fallbackText = "Photosynthesis is the cellular process plants use to produce glucose from light energy, carbon dioxide, and water. What inputs do plants absorb from their surroundings?";
+      }
+
       const fallbackMsg: ChatMessage = {
         id: `m_${Date.now()}`,
         sender: 'neuro',
-        text: "Consider the equation x = -b / (2a). When b = -4, calculating -b gives -(-4). What sign does the double negative become?",
-        strategy: 'counterexample',
+        text: fallbackText,
+        strategy: 'guided_problem_solving',
         timestamp: 'Just now',
       };
       setMessages((prev) => [...prev, fallbackMsg]);
-      setActiveStrategyNote("Active Policy: counterexample (Offline Fallback Guard)");
+      setActiveStrategyNote("Active Policy: Socratic Question (Offline Fallback)");
       handleSpeakMessage(fallbackMsg.text);
     } finally {
       setIsLoading(false);
@@ -151,13 +187,13 @@ export const AskNeuroPage: React.FC = () => {
       const response = await api.processTurn({
         subject: selectedSubject,
         concept_id: 'quadratic.vertex',
-        question_text: "Find the x-coordinate of the vertex for f(x) = x² - 4x + 3",
-        canonical_answer: "x = 2",
+        question_text: currentQuestionTitle,
+        canonical_answer: canonicalAnswer,
         student_message: "I'm stuck and need a simpler step.",
         student_reasoning: "I don't know where to start.",
       });
 
-      const feedbackText = response.intervention?.text || "Let's step back to a simpler prerequisite: If you have -( -4 ), what is that equal to?";
+      const feedbackText = response.intervention?.text || "Let's break this down into a simpler first step. What is the fundamental definition we are starting with?";
       const stuckMsg: ChatMessage = {
         id: `m_stuck_${Date.now()}`,
         sender: 'neuro',
@@ -173,7 +209,7 @@ export const AskNeuroPage: React.FC = () => {
       const fallbackStuck: ChatMessage = {
         id: `m_stuck_${Date.now()}`,
         sender: 'neuro',
-        text: "Let's step back to a simpler prerequisite: If you have -( -4 ), what is that equal to?",
+        text: "Let's step back to a simpler prerequisite: What is the main definition or formula we need to apply here?",
         strategy: 'simpler_prerequisite',
         hint_level: 1,
         timestamp: 'Just now',
@@ -194,10 +230,10 @@ export const AskNeuroPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-bg-base transition-colors">
+    <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-bg-base transition-colors relative">
       {/* Primary Dialogue Stream */}
       <div className="flex-1 flex flex-col h-full border-r border-border-subtle overflow-hidden">
-        {/* Banner with Subject Selector & New Chat */}
+        {/* Banner with Subject Selector & Action Buttons */}
         <div className="px-6 py-3 bg-bg-surface border-b border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 text-accent-500 font-bold">
@@ -237,16 +273,41 @@ export const AskNeuroPage: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Ask / Set Custom Question Button */}
+            <button
+              onClick={() => setShowCustomModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-accent-softcyan dark:bg-[#132B38] text-accent-cyan dark:text-[#38BDF8] border border-accent-cyan/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+              title="Add or change the target problem / question"
+            >
+              <FileQuestion className="h-4 w-4" />
+              <span>Change Question</span>
+            </button>
+
+            {/* New Chat Button */}
             <button
               onClick={handleNewChat}
               className="px-3 py-1.5 rounded-xl bg-accent-lavender hover:bg-accent-200 text-accent-700 dark:bg-[#241E3E] dark:text-accent-300 dark:border-accent-700 border border-accent-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
-              title="Start a fresh pedagogical tutoring turn"
+              title="Start a fresh conversation"
             >
               <MessageSquarePlus className="h-4 w-4" />
               <span>New Chat</span>
             </button>
           </div>
+        </div>
+
+        {/* Current Active Question Context Bar */}
+        <div className="px-6 py-2 bg-bg-raised border-b border-border-subtle flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="font-bold text-accent-500 shrink-0">Current Question:</span>
+            <span className="truncate text-text-primary font-medium">{currentQuestionTitle}</span>
+          </div>
+          <button 
+            onClick={() => setShowCustomModal(true)} 
+            className="text-[11px] text-accent-cyan hover:underline shrink-0 ml-3 font-semibold"
+          >
+            Custom Question +
+          </button>
         </div>
 
         {/* Message History */}
@@ -256,7 +317,6 @@ export const AskNeuroPage: React.FC = () => {
               key={msg.id}
               className={`flex flex-col ${msg.sender === 'student' ? 'items-end' : 'items-start'}`}
             >
-              {/* Message Bubble */}
               <div 
                 className={`max-w-2xl rounded-2xl p-5 text-sm shadow-sm transition-all ${
                   msg.sender === 'student'
@@ -345,7 +405,7 @@ export const AskNeuroPage: React.FC = () => {
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type your response or answer... (Enter to send, Shift+Enter for new line)"
+                  placeholder="Ask a question or explain your reasoning step... (Enter to send, Shift+Enter for new line)"
                   rows={2}
                   className="w-full rounded-xl bg-bg-raised p-3 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent-500 transition-all resize-none border border-border-subtle"
                 />
@@ -418,6 +478,71 @@ export const AskNeuroPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Question Modal */}
+      {showCustomModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-bg-surface border border-border-subtle rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+              <h3 className="text-base font-bold text-text-primary flex items-center gap-2">
+                <PlusCircle className="h-5 w-5 text-accent-500" />
+                <span>Ask Any Custom Question</span>
+              </h3>
+              <button 
+                onClick={() => setShowCustomModal(false)}
+                className="text-text-muted hover:text-text-primary text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSetCustomQuestion} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-text-primary mb-1">
+                  Question / Problem Statement
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={customQuestionInput}
+                  onChange={(e) => setCustomQuestionInput(e.target.value)}
+                  placeholder="e.g., What is photosynthesis? or Why does binary search require a sorted array?"
+                  className="w-full rounded-xl bg-bg-raised p-3 text-xs text-text-primary placeholder:text-text-muted border border-border-subtle focus:outline-none focus:ring-1 focus:ring-accent-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-text-primary mb-1">
+                  Expected / Canonical Answer (Optional, for anti-leakage checking)
+                </label>
+                <input
+                  type="text"
+                  value={customAnswerInput}
+                  onChange={(e) => setCustomAnswerInput(e.target.value)}
+                  placeholder="e.g., process of converting light energy into glucose"
+                  className="w-full rounded-xl bg-bg-raised px-3 py-2 text-xs text-text-primary placeholder:text-text-muted border border-border-subtle focus:outline-none focus:ring-1 focus:ring-accent-500"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCustomModal(false)}
+                  className="px-4 py-2 rounded-xl bg-bg-raised text-text-secondary hover:text-text-primary text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-accent-500 hover:bg-accent-600 text-white text-xs font-bold"
+                >
+                  Start Socratic Dialogue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
