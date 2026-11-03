@@ -1,0 +1,27 @@
+1
+00:00:00,500 --> 00:00:11,500
+Welcome to NeuroTeach AI, an Adaptive Pedagogical Learning Companion engineered with Misconception DNA, Anti-Leakage Guardrails, and a fine-tuned Qwen 3.5 4B LoRA adapter.
+
+2
+00:00:12,000 --> 00:00:23,000
+Starting on the Home Dashboard, our Markov Failure-State Policy continuously prioritizes personalized interventions, tracking daily concept goals and active misconceptions.
+
+3
+00:00:23,500 --> 00:00:35,000
+In Ask Neuro, when a student submits an incorrect formula, our Socratic engine identifies the exact conceptual flaw, selecting counterexamples rather than giving away the answer.
+
+4
+00:00:35,500 --> 00:00:46,000
+Evaluators can also input any custom problem, such as what is photosynthesis or binary search invariants, and receive contextual Socratic discovery questions.
+
+5
+00:00:46,500 --> 00:00:56,800
+The integrated Visual Pattern Lab features real-time Cartesian graphs with interactive parameter sliders, paired with a browser-native voice assistant for audio reinforcement.
+
+6
+00:00:57,200 --> 00:01:07,000
+Our Subject Roadmap visualizes prerequisite concept dependencies, while the Evaluator computes Bayesian mastery breakdowns and transfer verification.
+
+7
+00:01:07,500 --> 00:01:16,200
+Crafted with seamless Dark and Light theme support, NeuroTeach AI is live and ready for evaluation at neuroteach-ai.vercel.app.
