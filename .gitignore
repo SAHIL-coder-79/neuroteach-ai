@@ -1,0 +1,48 @@
+# Node dependencies
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+
+# Python / Virtual Environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+.env.local
+.env.*.local
+*.venv
+
+# Model weights, datasets, checkpoints and caches
+*.pt
+*.bin
+*.onnx
+*.safetensors
+ml/datasets/*.jsonl
+ml/datasets/*.csv
+!ml/datasets/.gitkeep
+artifacts/training_results/*
+!artifacts/training_results/.gitkeep
+.cache/
+huggingface/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+.coverage
+htmlcov/
+.pytest_cache/

@@ -1,0 +1,99 @@
+{
+  "dataset_name": "NEUROTEACH_AI_SFT_CURATED_DATASET_V2",
+  "version": "2.0.0",
+  "total_unique_records": 1350,
+  "split_ratio": {
+    "train": 0.8,
+    "validation": 0.1074,
+    "test": 0.0926
+  },
+  "zero_question_leakage_guarantee": true,
+  "splits": {
+    "train.jsonl": {
+      "row_count": 1080,
+      "percentage": 80.0,
+      "unique_questions": 257,
+      "sha256": "30d9a484bf8a86d6eb609f7928928f1786aaf56255939a1f104f43caccbb9ad4",
+      "subjects": {
+        "dsa": 232,
+        "mathematics": 244,
+        "python": 374,
+        "ai_ml": 230
+      },
+      "strategies": {
+        "simpler_prerequisite": 97,
+        "progressive_hint": 381,
+        "guided_problem_solving": 115,
+        "step_by_step": 99,
+        "example_based": 98,
+        "counterexample": 90,
+        "contrastive": 103,
+        "analogy": 97
+      },
+      "error_types": {
+        "conceptual": 798,
+        "unclear": 122,
+        "careless": 160
+      }
+    },
+    "validation.jsonl": {
+      "row_count": 145,
+      "percentage": 10.74,
+      "unique_questions": 31,
+      "sha256": "9d37e3148394f17e7e9b389ad6290de4e53b6a38a980d4e742eda3a1f37782b1",
+      "subjects": {
+        "ai_ml": 49,
+        "dsa": 32,
+        "mathematics": 44,
+        "python": 20
+      },
+      "strategies": {
+        "guided_problem_solving": 15,
+        "step_by_step": 12,
+        "progressive_hint": 46,
+        "analogy": 12,
+        "counterexample": 10,
+        "simpler_prerequisite": 19,
+        "example_based": 14,
+        "contrastive": 17
+      },
+      "error_types": {
+        "conceptual": 111,
+        "unclear": 14,
+        "careless": 20
+      }
+    },
+    "test.jsonl": {
+      "row_count": 125,
+      "percentage": 9.26,
+      "unique_questions": 24,
+      "sha256": "243895d21a0dad2fed14a60b713ee77fab5eb3ad4578d26af51f753dc0661819",
+      "subjects": {
+        "ai_ml": 22,
+        "mathematics": 35,
+        "python": 30,
+        "dsa": 38
+      },
+      "strategies": {
+        "analogy": 11,
+        "guided_problem_solving": 22,
+        "simpler_prerequisite": 15,
+        "progressive_hint": 43,
+        "example_based": 8,
+        "step_by_step": 12,
+        "contrastive": 7,
+        "counterexample": 7
+      },
+      "error_types": {
+        "conceptual": 95,
+        "careless": 9,
+        "unclear": 21
+      }
+    }
+  },
+  "file_hashes": {
+    "train.jsonl": "30d9a484bf8a86d6eb609f7928928f1786aaf56255939a1f104f43caccbb9ad4",
+    "validation.jsonl": "9d37e3148394f17e7e9b389ad6290de4e53b6a38a980d4e742eda3a1f37782b1",
+    "test.jsonl": "243895d21a0dad2fed14a60b713ee77fab5eb3ad4578d26af51f753dc0661819"
+  }
+}

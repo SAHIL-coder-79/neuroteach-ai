@@ -1,0 +1,102 @@
+{
+  "dataset_name": "NEUROTEACH_AI_SFT_CURATED_DATASET",
+  "version": "1.0.0",
+  "source_dataset": "D:\\oracathon\\ml\\datasets\\train.jsonl",
+  "generated_timestamp": "2026-11-02T20:30:00Z",
+  "random_seed": 42,
+  "total_unique_records": 1050,
+  "split_ratio": {
+    "train": 0.8,
+    "validation": 0.1,
+    "test": 0.1
+  },
+  "zero_question_leakage_guarantee": true,
+  "splits": {
+    "train.jsonl": {
+      "row_count": 840,
+      "percentage": 80.0,
+      "unique_questions": 193,
+      "sha256": "2bddcf4d7c011111bcf218fccbaa3ee51fd3ab05abbe684162e0fe5a8868c6ba",
+      "subjects": {
+        "mathematics": 189,
+        "ai_ml": 209,
+        "dsa": 178,
+        "python": 264
+      },
+      "strategies": {
+        "progressive_hint": 279,
+        "simpler_prerequisite": 83,
+        "step_by_step": 82,
+        "counterexample": 71,
+        "contrastive": 83,
+        "analogy": 72,
+        "guided_problem_solving": 100,
+        "example_based": 70
+      },
+      "error_types": {
+        "unclear": 86,
+        "conceptual": 633,
+        "careless": 121
+      }
+    },
+    "validation.jsonl": {
+      "row_count": 105,
+      "percentage": 10.0,
+      "unique_questions": 29,
+      "sha256": "4a00204f5bc763998052e1b907427f5496f6f08e8f9ad944b05231d651cb339c",
+      "subjects": {
+        "python": 44,
+        "dsa": 12,
+        "mathematics": 22,
+        "ai_ml": 27
+      },
+      "strategies": {
+        "progressive_hint": 35,
+        "step_by_step": 11,
+        "guided_problem_solving": 12,
+        "analogy": 13,
+        "contrastive": 12,
+        "simpler_prerequisite": 6,
+        "example_based": 8,
+        "counterexample": 8
+      },
+      "error_types": {
+        "careless": 16,
+        "conceptual": 79,
+        "unclear": 10
+      }
+    },
+    "test.jsonl": {
+      "row_count": 105,
+      "percentage": 10.0,
+      "unique_questions": 34,
+      "sha256": "ae34e036dc6bdf63744ce6c2eddb4913d29ece4abd61dad86cb3c5bc23797267",
+      "subjects": {
+        "dsa": 31,
+        "python": 32,
+        "ai_ml": 11,
+        "mathematics": 31
+      },
+      "strategies": {
+        "contrastive": 9,
+        "simpler_prerequisite": 17,
+        "guided_problem_solving": 11,
+        "step_by_step": 5,
+        "example_based": 15,
+        "counterexample": 9,
+        "progressive_hint": 32,
+        "analogy": 7
+      },
+      "error_types": {
+        "conceptual": 86,
+        "careless": 11,
+        "unclear": 8
+      }
+    }
+  },
+  "file_hashes": {
+    "train.jsonl": "2bddcf4d7c011111bcf218fccbaa3ee51fd3ab05abbe684162e0fe5a8868c6ba",
+    "validation.jsonl": "4a00204f5bc763998052e1b907427f5496f6f08e8f9ad944b05231d651cb339c",
+    "test.jsonl": "ae34e036dc6bdf63744ce6c2eddb4913d29ece4abd61dad86cb3c5bc23797267"
+  }
+}

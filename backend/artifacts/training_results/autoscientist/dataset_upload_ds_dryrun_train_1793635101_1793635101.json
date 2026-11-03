@@ -1,0 +1,15 @@
+{
+  "log_type": "dataset_upload",
+  "record_id": "ds_dryrun_train_1793635101",
+  "timestamp": "2026-11-02T15:58:21.855163+00:00",
+  "dry_run": true,
+  "payload": {
+    "dataset_id": "ds_dryrun_train_1793635101",
+    "status": "pending",
+    "filename": "train.jsonl",
+    "row_count": 1080,
+    "created_at": "2026-11-02T15:58:21.855163+00:00",
+    "is_mock": true,
+    "message": "[DRY-RUN] Verified file existence (1080 rows). No actual upload performed."
+  }
+}
